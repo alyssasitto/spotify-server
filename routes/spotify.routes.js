@@ -177,4 +177,19 @@ router.get("/search", (req, res) => {
 		});
 });
 
+// Route for getting individual artists
+router.get("/artist", (req, res) => {
+	const spotifyApi = new SpotifyWebApi({ accessToken: req.headers.token });
+	const search = req.headers.search;
+
+	spotifyApi
+		.searchArtists(search)
+		.then((response) => {
+			res.status(200).json(response);
+		})
+		.catch((err) => {
+			res.status(400).json(err);
+		});
+});
+
 module.exports = router;
