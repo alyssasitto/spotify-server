@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const axios = require("axios");
+const { response } = require("express");
 const SpotifyWebApi = require("spotify-web-api-node");
 const fetch = (...args) =>
 	import("node-fetch").then(({ default: fetch }) => fetch(...args));
@@ -186,6 +187,60 @@ router.get("/artist", (req, res) => {
 		.searchArtists(search)
 		.then((response) => {
 			res.status(200).json(response);
+		})
+		.catch((err) => {
+			res.status(400).json(err);
+		});
+});
+
+// Route for getting an individual artists albums
+router.get("/artist_albums", (req, res) => {
+	const artistId = req.headers.id;
+	const token = req.headers.token;
+
+	axios
+		.get(`https://api.spotify.com/v1/artists/${artistId}/albums?limit=50`, {
+			headers: {
+				"content-type": "application/x-www-form-urlencoded",
+				Authorization: `Bearer ${token}`,
+				"accept-encoding": "*",
+			},
+		})
+		.then((response) => {
+			res.status(200).json(response.data);
+		})
+		.catch((err) => {
+			console.log("THE ERROR ====>", err);
+			res.status(400).json(err);
+		});
+
+	// const spotifyApi = new SpotifyWebApi({ accessToken: req.headers.token });
+	// spotifyApi
+	// 	.getArtistAlbums(artistId)
+	// 	.then((response) => {
+	// 		res.status(200).json(response);
+	// 	})
+	// 	.catch((err) => res.status(400).json(err));
+});
+
+// Route for getting an artists top tracks
+router.get("/artist_top_tracks", (req, res) => {
+	const artistId = req.headers.id;
+	const token = req.headers.token;
+
+	axios
+		.get(
+			`https://api.spotify.com/v1/artists/${artistId}/top-tracks?market=US`,
+			{
+				headers: {
+					"content-type": "application/x-www-form-urlencoded",
+					Authorization: `Bearer ${token}`,
+					"accept-encoding": "*",
+				},
+			}
+		)
+		.then((response) => {
+			res.status(200).json(response.data);
 		})
 		.catch((err) => {
 			res.status(400).json(err);
