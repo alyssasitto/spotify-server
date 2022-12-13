@@ -1,6 +1,5 @@
 const router = require("express").Router();
 const axios = require("axios");
-const { response } = require("express");
 const SpotifyWebApi = require("spotify-web-api-node");
 const fetch = (...args) =>
 	import("node-fetch").then(({ default: fetch }) => fetch(...args));
@@ -213,14 +212,6 @@ router.get("/artist_albums", (req, res) => {
 			console.log("THE ERROR ====>", err);
 			res.status(400).json(err);
 		});
-
-	// const spotifyApi = new SpotifyWebApi({ accessToken: req.headers.token });
-	// spotifyApi
-	// 	.getArtistAlbums(artistId)
-	// 	.then((response) => {
-	// 		res.status(200).json(response);
-	// 	})
-	// 	.catch((err) => res.status(400).json(err));
 });
 
 // Route for getting an artists top tracks
@@ -241,6 +232,54 @@ router.get("/artist_top_tracks", (req, res) => {
 		)
 		.then((response) => {
 			res.status(200).json(response.data);
+		})
+		.catch((err) => {
+			res.status(400).json(err);
+		});
+});
+
+// Route for playing a song
+router.get("/play_song", (req, res) => {
+	const token = req.headers.token;
+	const context_uri = req.headers.context_uri;
+	const track = req.headers.track;
+	const device_id = req.headers.device_id;
+
+	const data = {
+		context_uri: `${context_uri}`,
+		offset: {
+			position: Number(track),
+		},
+		position_ms: 0,
+	};
+
+	axios
+		.put(
+			`https://api.spotify.com/v1/me/player/play?device_id=${device_id}`,
+			JSON.stringify(data),
+			{
+				headers: {
+					"content-type": "application/x-www-form-urlencoded",
+					Authorization: `Bearer ${token}`,
+					"accept-encoding": "*",
+				},
+			}
+		)
+		.then((response) => {
+			res.status(200).json("Song playing");
+		})
+		.catch((err) => {
+			res.status(400).json(err);
+		});
+});
+
+router.get("/pause-song", (req, res) => {
+	const spotifyApi = new SpotifyWebApi({ accessToken: req.headers.token });
+
+	spotifyApi
+		.pause()
+		.then(() => {
+			res.status(200).json("Song paused");
 		})
 		.catch((err) => {
 			res.status(400).json(err);
