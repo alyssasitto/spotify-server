@@ -244,13 +244,16 @@ router.get("/play_song", (req, res) => {
 	const context_uri = req.headers.context_uri;
 	const track = req.headers.track;
 	const device_id = req.headers.device_id;
+	const timestamp = req.headers.timestamp;
+
+	console.log("THIS IS THE TIMESTAMP ====>", timestamp);
 
 	const data = {
 		context_uri: `${context_uri}`,
 		offset: {
 			position: Number(track),
 		},
-		position_ms: 0,
+		position_ms: Number(timestamp),
 	};
 
 	axios
@@ -269,17 +272,33 @@ router.get("/play_song", (req, res) => {
 			res.status(200).json("Song playing");
 		})
 		.catch((err) => {
+			console.log(err);
 			res.status(400).json(err);
 		});
 });
 
-router.get("/pause-song", (req, res) => {
+// Route for pausing song
+router.get("/pause_song", (req, res) => {
 	const spotifyApi = new SpotifyWebApi({ accessToken: req.headers.token });
 
 	spotifyApi
 		.pause()
 		.then(() => {
 			res.status(200).json("Song paused");
+		})
+		.catch((err) => {
+			res.status(400).json(err);
+		});
+});
+
+// Route for getting current song
+router.get("/currently_playing", (req, res) => {
+	const spotifyApi = new SpotifyWebApi({ accessToken: req.headers.token });
+
+	spotifyApi
+		.getMyCurrentPlayingTrack()
+		.then((response) => {
+			res.status(200).json(response);
 		})
 		.catch((err) => {
 			res.status(400).json(err);
