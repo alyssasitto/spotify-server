@@ -4,6 +4,8 @@ const axios = require("axios");
 const SpotifyWebApi = require("spotify-web-api-node");
 const request = require("request");
 const stateKey = "spotify_auth_state";
+const redirect_uri =
+	process.env.REDIRECT_URI || "http://localhost:5005/callback/";
 
 // Route for logging in
 router.get("/login", (req, res) => {
@@ -30,7 +32,7 @@ router.get("/login", (req, res) => {
 				response_type: "code",
 				client_id: process.env.CLIENT_ID,
 				scope: scope,
-				redirect_uri: process.env.REDIRECT_URI,
+				redirect_uri: redirect_uri,
 				show_dialog: true,
 				state: state,
 			})
@@ -46,7 +48,7 @@ router.get("/callback", (req, res) => {
 	const credentials = {
 		clientId: process.env.CLIENT_ID,
 		clientSecret: process.env.CLIENT_SECRET,
-		redirectUri: process.env.REDIRECT_URI,
+		redirectUri: redirect_uri,
 	};
 
 	const spotifyApi = new SpotifyWebApi(credentials);
@@ -64,11 +66,10 @@ router.get("/callback", (req, res) => {
 			.then((response) => {
 				if (response.statusCode === 200) {
 					const { access_token, refresh_token, expires_in } = response.body;
+					const api_url = process.env.API_URL || "http://localhost:3000";
 
-					const redirect_uri =
-						process.env.REDIRECT_URI || "http://localhost:3000";
 					res.redirect(
-						`${redirect_uri}/?` +
+						`${api_url}/?` +
 							queryString.stringify({
 								access_token,
 								refresh_token,
