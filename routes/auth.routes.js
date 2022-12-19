@@ -65,8 +65,10 @@ router.get("/callback", (req, res) => {
 				if (response.statusCode === 200) {
 					const { access_token, refresh_token, expires_in } = response.body;
 
+					const redirect_uri =
+						process.env.REDIRECT_URI || "http://localhost:3000";
 					res.redirect(
-						`http://localhost:3000/?` +
+						`${redirect_uri}/?` +
 							queryString.stringify({
 								access_token,
 								refresh_token,
