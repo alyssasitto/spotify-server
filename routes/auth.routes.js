@@ -66,7 +66,7 @@ router.get("/callback", (req, res) => {
 			.then((response) => {
 				if (response.statusCode === 200) {
 					const { access_token, refresh_token, expires_in } = response.body;
-					const api_url = process.env.API_URL || "http://localhost:3000";
+					const api_url = process.env.ORIGIN || "http://localhost:3000";
 
 					res.redirect(
 						`${api_url}/?` +
