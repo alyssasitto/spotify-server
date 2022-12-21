@@ -5,7 +5,7 @@ const SpotifyWebApi = require("spotify-web-api-node");
 const request = require("request");
 const stateKey = "spotify_auth_state";
 const redirect_uri =
-	process.env.REDIRECT_URI || "http://localhost:5005/callback/";
+	process.env.REDIRECT_URL || "http://localhost:5005/callback/";
 
 // Route for logging in
 router.get("/login", (req, res) => {
@@ -49,6 +49,7 @@ router.get("/callback", (req, res) => {
 		clientId: process.env.CLIENT_ID,
 		clientSecret: process.env.CLIENT_SECRET,
 		redirectUri: redirect_uri,
+		receiveAudio: true,
 	};
 
 	const spotifyApi = new SpotifyWebApi(credentials);

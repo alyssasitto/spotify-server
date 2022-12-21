@@ -1,8 +1,6 @@
 const router = require("express").Router();
 const axios = require("axios");
 const SpotifyWebApi = require("spotify-web-api-node");
-const fetch = (...args) =>
-	import("node-fetch").then(({ default: fetch }) => fetch(...args));
 
 // Route for getting categories
 router.get("/categories", (req, res) => {
@@ -244,16 +242,13 @@ router.get("/play_song", (req, res) => {
 	const context_uri = req.headers.context_uri;
 	const track = req.headers.track;
 	const device_id = req.headers.device_id;
-	const timestamp = req.headers.timestamp;
-
-	console.log("THIS IS THE TIMESTAMP ====>", timestamp);
 
 	const data = {
 		context_uri: `${context_uri}`,
 		offset: {
 			position: Number(track),
 		},
-		position_ms: Number(timestamp),
+		position_ms: 0,
 	};
 
 	axios
